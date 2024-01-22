@@ -10,11 +10,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/drei": "^9.96.1",
+    "@react-three/fiber": "^8.15.14",
+    "@types/three": "^0.160.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "reactflow": "^11.9.4"
+    "react-three-fiber": "^6.0.13",
+    "reactflow": "^11.9.4",
+    "three": "^0.160.0",
+    "three-stdlib": "^2.29.4"
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.6",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
