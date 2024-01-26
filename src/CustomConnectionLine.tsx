@@ -67,7 +67,7 @@ function CustomConnectionLine({
         targetX: toX,
         targetY: toY,
     }, 70)
-    console.log(getMarkerEnd(MarkerType.ArrowClosed))
+    //console.log(getMarkerEnd(MarkerType.ArrowClosed))
     return (
         <g>
             <path

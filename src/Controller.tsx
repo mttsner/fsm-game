@@ -1,4 +1,12 @@
-export default function Controller({ labelX, labelY }) {
+import { EdgeData } from './game/fsm';
+
+type ControllerProps = {
+    labelX: number,
+    labelY: number,
+    data: EdgeData
+}
+
+export default function Controller({ labelX, labelY, data }: ControllerProps) {
     return (
         <div
             style={{
@@ -11,34 +19,44 @@ export default function Controller({ labelX, labelY }) {
                 <label className="bg-red-600 bg-opacity-25 flex items-center justify-center">
                     <input
                         type="checkbox"
-                        className=" focus outline outline-neutral-500 bg-neutral-700 border-neutral-700 border-2 appearance-none h-4 w-4 rounded-full checked:bg-white checked:outline-white"
+                        checked={data.left}
+                        onChange={(e) => data.left = e.target.checked}
+                        className=" focus outline outline-neutral-500 bg-neutral-700 border-neutral-700 border-2 appearance-none h-4 w-4 rounded-full checked:bg-blue-600 checked:outline-white"
                     ></input>
                 </label>
                 <label className="bg-blue-600 bg-opacity-25 flex items-center justify-center">
                     <input
                         type="checkbox"
-                        className="outline outline-neutral-500 bg-neutral-700 border-neutral-700 border-2 appearance-none h-4 w-4 rounded-full checked:bg-white checked:outline-white"
+                        checked={data.right}
+                        onChange={(e) => data.right = e.target.checked}
+                        className="outline outline-neutral-500 bg-neutral-700 border-neutral-700 border-2 appearance-none h-4 w-4 rounded-full checked:bg-yellow-600 checked:outline-white"
                     ></input>
                 </label>
-                <label>
-                    <input
-                        type="number"
-                        min={-100}
-                        max={100}
-                        defaultValue={0}
-                        className="bg-neutral-700 outline-neutral-500 border-2 rounded-sm w-10 p-1 text-center"
-                    ></input>
-                </label>
-                <label>
-                    <input
-                        type="number"
-                        min={-100}
-                        max={100}
-                        defaultValue={0}
-                        className="bg-neutral-700 outline-neutral-500 border-2 rounded-sm w-10 p-1 text-center"
-                    ></input>
-                </label>
+                
             </div>
         </div>
     );
 }
+
+
+/*
+<label>
+                    <input
+                        type="number"
+                        min={-100}
+                        max={100}
+                        defaultValue={0}
+                        onChange={handleChange}
+                        className="bg-neutral-700 outline-neutral-500 border-2 rounded-sm w-10 p-1 text-center"
+                    ></input>
+                </label>
+                <label>
+                    <input
+                        type="number"
+                        min={-100}
+                        max={100}
+                        defaultValue={0}
+                        className="bg-neutral-700 outline-neutral-500 border-2 rounded-sm w-10 p-1 text-center"
+                    ></input>
+                </label>
+*/

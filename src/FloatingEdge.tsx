@@ -18,13 +18,15 @@ function getSpecialPath({ sourceX, sourceY, targetX, targetY }: GetSpecialPathPa
   return `M ${sourceX} ${sourceY} Q ${centerX} ${centerY + offset} ${targetX} ${targetY}`;
 };
 
-function FloatingEdge({ id, source, target, markerEnd, style }: EdgeProps) {
+function FloatingEdge({ id, source, target, markerEnd, style, data }: EdgeProps) {
   const sourceNode = useStore(useCallback((store) => store.nodeInternals.get(source), [source]));
   const targetNode = useStore(useCallback((store) => store.nodeInternals.get(target), [target]));
 
   if (!sourceNode || !targetNode) {
     return null;
   }
+
+  data.test = true
 
   const { sx, sy, tx, ty } = getEdgeParams(sourceNode, targetNode);
 
@@ -55,6 +57,7 @@ function FloatingEdge({ id, source, target, markerEnd, style }: EdgeProps) {
         <Controller
           labelX={labelX}
           labelY={labelY}
+          data={data}
         />
       </EdgeLabelRenderer>
     </>

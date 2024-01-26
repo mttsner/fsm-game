@@ -1,11 +1,10 @@
 import { Canvas } from "@react-three/fiber";
 import {
-    Line,
     MapControls,
     OrthographicCamera,
     useHelper,
 } from "@react-three/drei";
-import Robot from "./robot";
+import Robot, { Update } from "./robot";
 import { forwardRef, useRef } from "react";
 import * as THREE from "three";
 
@@ -81,7 +80,11 @@ const Map = forwardRef<THREE.Mesh>((_, ref) => {
     return <mesh ref={ref} geometry={geometry} material={material} />;
 })
 
-function Game() {
+export type GameProps = {
+    update: Update
+}
+
+function Game({update}: GameProps) {
     const mapRef = useRef(null!)
 
     return (
@@ -90,7 +93,7 @@ function Game() {
             <MapControls screenSpacePanning />
             <Map ref={mapRef} />
             <gridHelper args={[20, 20]} rotation={[Math.PI / 2, 0, 0]} />
-            <Robot map={mapRef}/>
+            <Robot map={mapRef} update={update}/>
         </Canvas>
     );
 }
