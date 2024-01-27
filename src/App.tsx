@@ -137,7 +137,6 @@ function game(nodes: State[], edges: Transition[]) {
         );
 
         if (edge === undefined) {
-            console.log(currentState.data.label)
             return currentState.data.update(left, right);
         }
 
