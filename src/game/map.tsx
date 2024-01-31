@@ -1,12 +1,10 @@
-import { Canvas } from "@react-three/fiber";
-import {
-    MapControls,
-    OrthographicCamera,
-    useHelper,
-} from "@react-three/drei";
+import { Canvas, useLoader } from "@react-three/fiber";
+import { MapControls, OrthographicCamera, useHelper } from "@react-three/drei";
 import Robot, { Update } from "./robot";
 import { forwardRef, useRef } from "react";
 import * as THREE from "three";
+import { SVGResult } from "three-stdlib";
+import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 
 const Camera = () => {
     const camera = useRef<THREE.OrthographicCamera>(null!);
@@ -26,13 +24,46 @@ const Camera = () => {
     );
 };
 
-const Map = forwardRef<THREE.Mesh>((_, ref) => {
-    const leftup = new THREE.Vector3(-10, 10, 0)
-    const leftbottom = new THREE.Vector3(-10, -10, 0)
-    const rightup = new THREE.Vector3(10, 10, 0)
-    const rightbottom = new THREE.Vector3(10, -10, 0)
+type SvgProps = {
+    src: SVGResult;
+};
 
-    const width = 0.5
+const Svg = forwardRef<THREE.Group, SvgProps>(({ src }, ref) => {
+    const material = new THREE.MeshBasicMaterial({ color: "yellow" });
+
+    return (
+        <group ref={ref}>
+            {src.paths.map((path) =>
+                path.subPaths.map((sub) => {
+                    // sub.arcLengthDivisions can be used to make svg curves smoother
+                    console.log(path.userData?.style);
+                    const style = SVGLoader.getStrokeStyle(
+                        path.userData?.style?.strokeWidth
+                    );
+                    const geometry = SVGLoader.pointsToStroke(
+                        sub.getPoints(),
+                        style
+                    );
+                    return (
+                        <mesh
+                            key={geometry.uuid}
+                            geometry={geometry}
+                            material={material}
+                        />
+                    );
+                })
+            )}
+        </group>
+    );
+});
+
+const Map = forwardRef<THREE.Mesh>((_, ref) => {
+    const leftup = new THREE.Vector3(-10, 10, 0);
+    const leftbottom = new THREE.Vector3(-10, -10, 0);
+    const rightup = new THREE.Vector3(10, 10, 0);
+    const rightbottom = new THREE.Vector3(10, -10, 0);
+
+    const width = 0.5;
 
     // Hardcoded because its the easiest way for testing
     const vertices = [
@@ -44,7 +75,7 @@ const Map = forwardRef<THREE.Mesh>((_, ref) => {
         leftup.clone().add(new THREE.Vector3(width, -width, 0)),
         leftbottom,
         leftbottom.clone().add(new THREE.Vector3(width, width, 0)),
-        
+
         // Top
         leftup,
         leftup.clone().add(new THREE.Vector3(width, -width, 0)),
@@ -71,29 +102,29 @@ const Map = forwardRef<THREE.Mesh>((_, ref) => {
         leftbottom,
         rightbottom.clone().add(new THREE.Vector3(-width, width, 0)),
         leftbottom.clone().add(new THREE.Vector3(width, width, 0)),
-
     ];
 
     const geometry = new THREE.BufferGeometry().setFromPoints(vertices);
     const material = new THREE.MeshBasicMaterial({ color: "red" });
 
     return <mesh ref={ref} geometry={geometry} material={material} />;
-})
+});
 
 export type GameProps = {
-    update: Update
-}
+    update: Update;
+};
 
-function Game({update}: GameProps) {
-    const mapRef = useRef(null!)
+function Game({ update }: GameProps) {
+    const mapRef = useRef(null!);
+    const result = useLoader(SVGLoader, "./map8.svg");
 
     return (
         <Canvas orthographic camera={{ position: [0, 0, 1], zoom: 10 }}>
             <color attach="background" args={[243, 243, 243]} />
             <MapControls screenSpacePanning />
-            <Map ref={mapRef} />
             <gridHelper args={[20, 20]} rotation={[Math.PI / 2, 0, 0]} />
-            <Robot map={mapRef} update={update}/>
+            <Svg ref={mapRef} src={result} />
+            <Robot position={[-10, -5, 0.1]} map={mapRef} update={update} />
         </Canvas>
     );
 }

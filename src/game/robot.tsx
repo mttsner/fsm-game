@@ -1,8 +1,14 @@
-import { MutableRefObject, useRef } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
+import { MutableRefObject, useEffect, useRef } from "react";
+import {
+    RootState,
+    Vector3,
+    Euler,
+    useFrame,
+    useThree,
+} from "@react-three/fiber";
 import * as THREE from "three";
 
-function raycaster(course: MutableRefObject<THREE.Mesh>) {
+function raycaster(course: MutableRefObject<THREE.Object3D>) {
     const { raycaster } = useThree();
     const dir = new THREE.Vector3(0, 0, -1).normalize();
     const lines = course.current;
@@ -32,21 +38,26 @@ function rotate(rotation: THREE.Quaternion, angle: number) {
 
 export type Update = (left: boolean, right: boolean) => [number, number];
 
-type RobotProps = { map: MutableRefObject<THREE.Mesh>; update: Update };
+type RobotProps = {
+    map: MutableRefObject<THREE.Object3D>;
+    update: Update;
+    position?: Vector3;
+    rotation?: Euler;
+};
 
-function Robot({ map, update }: RobotProps) {
+function Robot({ map, update, position = [0, 0, 0.1], rotation }: RobotProps) {
     const mesh = useRef<THREE.Group>(null!);
-
     const lMesh = useRef<THREE.Mesh>(null!);
     const lMat = useRef<THREE.MeshBasicMaterial>(null!);
 
     const rMesh = useRef<THREE.Mesh>(null!);
     const rMat = useRef<THREE.MeshBasicMaterial>(null!);
 
-    var lastpos = useRef(new THREE.Vector3(-10, -5, 0.1));
-    var lastrot = useRef(new THREE.Quaternion());
-    var currentpos = useRef(new THREE.Vector3(-10, -5, 0.1));
-    var currentrot = useRef(new THREE.Quaternion());
+    var lastpos = useRef<THREE.Vector3>(null!);
+    var lastrot = useRef<THREE.Quaternion>(null!);
+
+    var currentpos = useRef<THREE.Vector3>(null!);
+    var currentrot = useRef<THREE.Quaternion>(null!);
 
     const internalOnFrame = (alpha: number) => {
         // Interpolate between positions from the physics system
@@ -56,7 +67,7 @@ function Robot({ map, update }: RobotProps) {
         mesh.current.position.copy(pos);
         mesh.current.quaternion.copy(rot);
     };
-
+    const raycast = raycaster(map);
     const internalOnTick = () => {
         // We actually don't need to look up the current.position every time
         // because it stays constant, since the mesh is positioned within the
@@ -87,15 +98,13 @@ function Robot({ map, update }: RobotProps) {
         lastpos.current.copy(currentpos.current);
         // Update the current robot rotation and position
         rotate(currentrot.current, angle);
-        move(currentpos.current, currentrot.current, speed * 0.04);
+        move(currentpos.current, currentrot.current, speed);
     };
 
     const tps = 1 / 30; // Ticks per second
-    const raycast = raycaster(map);
     let lag = useRef(0.0); // Avoid stale closure
 
-    // Game loop
-    useFrame((_, delta) => {
+    const onFrame = (_: RootState, delta: number) => {
         lag.current += delta;
         let count = 0;
 
@@ -111,10 +120,20 @@ function Robot({ map, update }: RobotProps) {
 
         let alpha = lag.current / tps; // Linear interpolation value (should be betwee 0 and 1)
         internalOnFrame(alpha);
-    });
+    };
 
+    // Start game loop when component has been rendered
+    useEffect(() => {
+        lastpos.current = mesh.current.position.clone();
+        currentpos.current = lastpos.current.clone();
+
+        lastrot.current = mesh.current.quaternion.clone();
+        currentrot.current = lastrot.current.clone();
+    }, []);
+    // Is this racy?
+    useFrame(onFrame);
     return (
-        <group position={[-10, -5, 0.1]} rotation={[0, 0, 0]} ref={mesh}>
+        <group position={position} rotation={rotation} ref={mesh}>
             <mesh position={[0, 0, 0]} ref={lMesh}>
                 <planeGeometry args={[3, 3]} />
                 <meshBasicMaterial ref={lMat} color={"black"} />
