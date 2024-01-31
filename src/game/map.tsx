@@ -36,14 +36,15 @@ const Svg = forwardRef<THREE.Group, SvgProps>(({ src }, ref) => {
             {src.paths.map((path) =>
                 path.subPaths.map((sub) => {
                     // sub.arcLengthDivisions can be used to make svg curves smoother
-                    console.log(path.userData?.style);
                     const style = SVGLoader.getStrokeStyle(
                         path.userData?.style?.strokeWidth
                     );
+
                     const geometry = SVGLoader.pointsToStroke(
                         sub.getPoints(),
                         style
                     );
+
                     return (
                         <mesh
                             key={geometry.uuid}
@@ -119,8 +120,7 @@ function Game({ update }: GameProps) {
     const result = useLoader(SVGLoader, "./map8.svg");
 
     return (
-        <Canvas orthographic camera={{ position: [0, 0, 1], zoom: 10 }}>
-            <color attach="background" args={[243, 243, 243]} />
+        <Canvas orthographic camera={{ position: [0, 0, 1], zoom: 10 }} className="">
             <MapControls screenSpacePanning />
             <gridHelper args={[20, 20]} rotation={[Math.PI / 2, 0, 0]} />
             <Svg ref={mapRef} src={result} />

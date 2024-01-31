@@ -1,9 +1,7 @@
 import { Handle, NodeProps, Position, useStore } from 'reactflow';
 
-const connectionNodeIdSelector = (state) => state.connectionNodeId;
-
 export default function CustomNode({ id, data }: NodeProps) {
-  const connectionNodeId = useStore(connectionNodeIdSelector);
+  const connectionNodeId = useStore((state) => state.connectionNodeId);
 
   const isConnecting = !!connectionNodeId;
   const isTarget = connectionNodeId && connectionNodeId !== id;

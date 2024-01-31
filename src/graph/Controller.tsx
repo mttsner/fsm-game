@@ -1,4 +1,4 @@
-import { EdgeData } from './game/fsm';
+import { EdgeData } from '../game/fsm';
 
 type ControllerProps = {
     labelX: number,
@@ -37,26 +37,3 @@ export default function Controller({ labelX, labelY, data }: ControllerProps) {
         </div>
     );
 }
-
-
-/*
-<label>
-                    <input
-                        type="number"
-                        min={-100}
-                        max={100}
-                        defaultValue={0}
-                        onChange={handleChange}
-                        className="bg-neutral-700 outline-neutral-500 border-2 rounded-sm w-10 p-1 text-center"
-                    ></input>
-                </label>
-                <label>
-                    <input
-                        type="number"
-                        min={-100}
-                        max={100}
-                        defaultValue={0}
-                        className="bg-neutral-700 outline-neutral-500 border-2 rounded-sm w-10 p-1 text-center"
-                    ></input>
-                </label>
-*/
