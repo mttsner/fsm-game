@@ -1,31 +1,30 @@
 import {
     getStraightPath,
     ConnectionLineComponentProps,
+    Node,
+    useStore,
+    useReactFlow,
     getMarkerEnd,
     MarkerType,
 } from "reactflow";
 
-type GetSpecialPathParams = {
-    sourceX: number;
-    sourceY: number;
-    targetX: number;
-    targetY: number;
-  };
-
-function getSpecialPath({ sourceX, sourceY, targetX, targetY }: GetSpecialPathParams, offset: number) {
-    const centerX = (sourceX + targetX) / 2;
-    const centerY = (sourceY + targetY) / 2;
-  
-    return `M ${sourceX} ${sourceY} Q ${centerX} ${centerY + offset} ${targetX} ${targetY}`;
-  };
-
-function getNodeIntersection(fromNode, fx, fy, tx, ty) {
+function getNodeIntersection(
+    fromNode: Node,
+    fx: number,
+    fy: number,
+    tx: number,
+    ty: number
+) {
     const { width: intersectionNodeWidth } = fromNode;
+
+    if (!intersectionNodeWidth) {
+        throw new Error("Node width undefined");
+    }
 
     const radius = intersectionNodeWidth / 2;
 
-    const cx = fx; //intersectionNodePosition.x + radius
-    const cy = fy; //intersectionNodePosition.y + radius
+    const cx = fx;
+    const cy = fy;
 
     const deltaY = ty - cy;
     const deltaX = tx - cx;
@@ -46,36 +45,51 @@ function CustomConnectionLine({
     connectionLineStyle,
     connectionStatus,
 }: ConnectionLineComponentProps) {
-    const position = getNodeIntersection(fromNode, fromX, fromY, toX, toY);
+    const connectionEndHandle = useStore((state) => state.connectionEndHandle);
+    const reactflow = useReactFlow();
 
-    if (connectionStatus == "valid") {
-        const { x, y } = getNodeIntersection(fromNode, toX, toY, fromX, fromY);
-        toX = x;
-        toY = y;
+    if (fromNode === undefined) {
+        throw new Error("From node is undefined");
+    }
+    let source;
+    let target = {x: toX, y: toY};
+    const valid = connectionStatus === "valid"
+    
+    if (valid && connectionEndHandle) {
+        const toNode = reactflow.getNode(connectionEndHandle.nodeId);
+        target = getNodeIntersection(
+            fromNode,
+            toNode!.position.x+fromNode.width!/2,
+            toNode!.position.y+fromNode.width!/2,
+            fromX,
+            fromY,
+        );
+        source = getNodeIntersection(
+            fromNode,
+            fromX,
+            fromY,
+            toNode!.position.x+fromNode.width!/2,
+            toNode!.position.y+fromNode.width!/2,
+        );
+    } else {
+        source = getNodeIntersection(fromNode, fromX, fromY, toX, toY);
     }
 
     const [edgePath] = getStraightPath({
-        sourceX: position.x,
-        sourceY: position.y,
-        targetX: toX,
-        targetY: toY,
+        sourceX: source.x,
+        sourceY: source.y,
+        targetX: target.x,
+        targetY: target.y,
     });
 
-    const newPath = getSpecialPath({
-        sourceX: position.x,
-        sourceY: position.y,
-        targetX: toX,
-        targetY: toY,
-    }, 70)
-    //console.log(getMarkerEnd(MarkerType.ArrowClosed))
     return (
         <g>
             <path
-              fill="none"
-              className="animated"
-              d={newPath}
-              markerEnd="url(#arrowclosed)"
-              style={connectionLineStyle}
+                fill="none"
+                className="animated"
+                d={edgePath}
+                markerEnd={valid ? "url(#1__color=white&type=arrowclosed)": ""}
+                style={connectionLineStyle}
             />
         </g>
     );

@@ -59,7 +59,7 @@ function game(nodes: State[], edges: Transition[]) {
         if (state !== undefined) {
             currentState.current = state;
         }
-        console.log(currentState.current.data.label);
+
         return currentState.current.data.update(left, right);
     };
     return { currentState, update };
@@ -128,7 +128,7 @@ const Graph = forwardRef<GraphHandle, GraphProps>(({initialNodes, initialEdges} 
             defaultEdgeOptions={defaultEdgeOptions}
             connectionLineComponent={CustomConnectionLine}
             connectionLineStyle={connectionLineStyle}
-            connectionRadius={100}
+            
             proOptions={proOptions}
         />
     );
