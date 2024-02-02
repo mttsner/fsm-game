@@ -1,15 +1,26 @@
+import { HtmlHTMLAttributes } from "react";
 import { Handle, NodeProps, Position, useStore } from "reactflow";
+
+export function NodeBase(props: HtmlHTMLAttributes<HTMLDivElement>) {
+    return (
+        <div
+            {...props}
+            className={
+                "bg-neutral-800 rounded-full border-4 w-36 h-36 flex overflow-hidden justify-center items-center relative font-bold"
+            }
+        />
+    );
+}
 
 export default function CustomNode({ id, data }: NodeProps) {
     const connectionNodeId = useStore((state) => state.connectionNodeId);
     const isConnecting = !!connectionNodeId;
 
     return (
-        <div
-            className={
-                (data.activated ? "border-red-600" : "border-white") +
-                " bg-neutral-800 rounded-full border-4 w-36 h-36 flex overflow-hidden justify-center items-center relative font-bold"
-            }
+        <NodeBase
+            style={{
+                borderColor: data.activated ? "red" : "white",
+            }}
         >
             {connectionNodeId !== id && (
                 <Handle
@@ -27,6 +38,6 @@ export default function CustomNode({ id, data }: NodeProps) {
                 />
             )}
             {data.label}
-        </div>
+        </NodeBase>
     );
 }

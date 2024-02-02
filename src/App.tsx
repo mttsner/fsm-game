@@ -5,6 +5,7 @@ import "reactflow/dist/style.css";
 import "./style.css";
 import Game from "./game/map.tsx";
 import Graph, { GraphHandle } from "./graph/Graph.tsx";
+import NodePicker from "./graph/Sidebar.tsx";
 
 const initialNodes: State[] = [
     {
@@ -109,6 +110,17 @@ const App = () => {
                         update={(...args) => updateRef.current.update(...args)}
                     />
                 </Suspense>
+            </div>
+            <div
+                style={{
+                    width: "100%",
+                    height: "20vh",
+                    top: "80vh",
+                    position: "absolute",
+                    display: "flex",
+                }}
+            >
+                <NodePicker />
             </div>
         </div>
     );

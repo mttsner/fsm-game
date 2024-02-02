@@ -1,4 +1,11 @@
-import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import {
+    DragEvent,
+    forwardRef,
+    useCallback,
+    useImperativeHandle,
+    useRef,
+    useState,
+} from "react";
 import { State, Transition } from "../game/fsm.ts";
 
 import ReactFlow, {
@@ -9,6 +16,8 @@ import ReactFlow, {
     Connection,
     Edge,
     Node,
+    ReactFlowInstance,
+    XYPosition,
 } from "reactflow";
 
 import CustomNode from "./CustomNode.tsx";
@@ -65,73 +74,152 @@ function game(nodes: State[], edges: Transition[]) {
     return { currentState, update };
 }
 
+const createNode = (position: XYPosition, type: string, id: string) => {
+    const node: State = {
+        id: id,
+        type: "custom",
+        position,
+        data: {
+            label: "",
+            activated: false,
+            transitions: [],
+            update: () => [0, 0],
+        },
+    };
+
+    switch (type) {
+        case "forward":
+            node.data.label = "Forward";
+            node.data.update = () => {
+                return [0.1, 0];
+            };
+            break;
+        case "still":
+            node.data.label = "Still";
+            break;
+        case "left":
+            node.data.label = "Left";
+            node.data.update = () => {
+                return [0, 0.05];
+            };
+            break;
+        case "right":
+            node.data.label = "Right";
+            node.data.update = () => {
+                return [0, -0.05];
+            };
+            break;
+        default:
+            throw new Error("Invalid node type");
+    }
+    return node;
+};
+
 export type GraphHandle = {
     update: (left: boolean, right: boolean) => [number, number];
 };
 
 export type GraphProps = {
-    initialNodes: Node[]
-    initialEdges: Edge[]
-}
+    initialNodes: Node[];
+    initialEdges: Edge[];
+};
 
-const Graph = forwardRef<GraphHandle, GraphProps>(({initialNodes, initialEdges} ,ref) => {
-    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+const Graph = forwardRef<GraphHandle, GraphProps>(
+    ({ initialNodes, initialEdges }, ref) => {
+        const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+        const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+        const [reactFlowInstance, setReactFlowInstance] =
+            useState<ReactFlowInstance>(null!);
 
-    const { currentState, update } = game(nodes, edges);
+        let count = initialNodes.length + 1;
+        const getId = () => `${count++}`;
 
-    useImperativeHandle(ref, () => ({
-        update: (left: boolean, right: boolean) => {
-            setNodes((nodes) =>
-                nodes.map((node) => {
-                    node.data = {
-                        ...node.data,
-                        activated:
-                            node.id == currentState.current.id,
-                    };
-                    return node;
-                })
-            );
-            return update(left, right);
-        }
-    }))
+        const { currentState, update } = game(nodes, edges);
 
-    const onConnect = useCallback(
-        (params: Connection) => {
-            if (!params.source || !params.target) {
-                return;
-            }
-            const edge: Transition = {
-                id: `${params.source}-${params.target}`,
-                source: params.source,
-                target: params.target,
-                data: {
-                    left: false,
-                    right: false,
-                },
-            };
-            setEdges((eds) => addEdge(edge, eds));
-        },
-        [setEdges]
-    );
+        useImperativeHandle(ref, () => ({
+            update: (left: boolean, right: boolean) => {
+                setNodes((nodes) =>
+                    nodes.map((node) => {
+                        node.data = {
+                            ...node.data,
+                            activated: node.id == currentState.current.id,
+                        };
+                        return node;
+                    })
+                );
+                return update(left, right);
+            },
+        }));
 
-    return (
-        <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            fitView
-            nodeTypes={nodeTypes}
-            edgeTypes={edgeTypes}
-            defaultEdgeOptions={defaultEdgeOptions}
-            connectionLineComponent={CustomConnectionLine}
-            connectionLineStyle={connectionLineStyle}
-            
-            proOptions={proOptions}
-        />
-    );
-});
+        const onConnect = useCallback(
+            (params: Connection) => {
+                if (!params.source || !params.target) {
+                    return;
+                }
+                const edge: Transition = {
+                    id: `${params.source}-${params.target}`,
+                    source: params.source,
+                    target: params.target,
+                    data: {
+                        left: false,
+                        right: false,
+                    },
+                };
+                setEdges((eds) => addEdge(edge, eds));
+            },
+            [setEdges]
+        );
 
-export default Graph
+        const onDrop = useCallback(
+            (event: DragEvent) => {
+                event.preventDefault();
+
+                const type = event.dataTransfer.getData(
+                    "application/reactflow"
+                );
+
+                // check if the dropped element is valid
+                if (typeof type === "undefined" || !type) {
+                    return;
+                }
+
+                const position = reactFlowInstance.screenToFlowPosition({
+                    x: event.clientX,
+                    y: event.clientY,
+                });
+
+                setNodes((nds) =>
+                    nds.concat(createNode(position, type, getId()))
+                );
+            },
+            [reactFlowInstance]
+        );
+
+        const onDragOver = useCallback((event: DragEvent) => {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "move";
+        }, []);
+
+        return (
+            <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                onConnect={onConnect}
+                fitView
+                onInit={setReactFlowInstance}
+                nodeTypes={nodeTypes}
+                edgeTypes={edgeTypes}
+                defaultEdgeOptions={defaultEdgeOptions}
+                connectionLineComponent={CustomConnectionLine}
+                connectionLineStyle={connectionLineStyle}
+                onDrop={onDrop}
+                onDragOver={onDragOver}
+                proOptions={proOptions}
+            />
+        );
+    }
+);
+
+export default Graph;
