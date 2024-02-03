@@ -117,6 +117,7 @@ const createNode = (position: XYPosition, type: string, id: string) => {
 
 export type GraphHandle = {
     update: (left: boolean, right: boolean) => [number, number];
+    onFrame: Function;
 };
 
 export type GraphProps = {
@@ -138,16 +139,18 @@ const Graph = forwardRef<GraphHandle, GraphProps>(
 
         useImperativeHandle(ref, () => ({
             update: (left: boolean, right: boolean) => {
+                return update(left, right);
+            },
+            onFrame: () => {
                 setNodes((nodes) =>
                     nodes.map((node) => {
                         node.data = {
                             ...node.data,
-                            activated: node.id == currentState.current.id,
+                            activated: node.id === currentState.current.id,
                         };
                         return node;
                     })
                 );
-                return update(left, right);
             },
         }));
 

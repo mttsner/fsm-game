@@ -108,6 +108,7 @@ const App = () => {
                 <Suspense>
                     <Game
                         update={(...args) => updateRef.current.update(...args)}
+                        onFrame={() => updateRef.current.onFrame()}
                     />
                 </Suspense>
             </div>

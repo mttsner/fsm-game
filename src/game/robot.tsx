@@ -41,11 +41,15 @@ function rotate(rotation: THREE.Quaternion, angle: number) {
 export type Update = (left: boolean, right: boolean) => [number, number];
 
 type RobotProps = {
+    tps: MutableRefObject<number>;
     object: GLTF & ObjectMap;
     map: MutableRefObject<THREE.Object3D>;
     update: Update;
     position?: Vector3;
     rotation?: Euler;
+
+    onFrame?: Function;
+    onTick?: Function;
 };
 
 function Robot({
@@ -54,6 +58,9 @@ function Robot({
     position = [0, 0, 0.1],
     rotation,
     object,
+    tps,
+    onFrame,
+    onTick,
 }: RobotProps) {
     const mesh = useRef<THREE.Group>(null!);
     const lMesh = useRef<THREE.Mesh>(null!);
@@ -110,27 +117,6 @@ function Robot({
         move(currentpos.current, currentrot.current, speed);
     };
 
-    const tps = 1 / 30; // Ticks per second
-    let lag = useRef(0.0); // Avoid stale closure
-
-    const onFrame = (_: RootState, delta: number) => {
-        lag.current += delta;
-        let count = 0;
-
-        while (lag.current >= tps) {
-            if (count > 10) {
-                // Prevent infinite loop from crashing the system
-                throw new Error("Too many physics iterations in one frame");
-            }
-            internalOnTick();
-            lag.current -= tps;
-            count++;
-        }
-
-        let alpha = lag.current / tps; // Linear interpolation value (should be betwee 0 and 1)
-        internalOnFrame(alpha);
-    };
-
     // Start game loop when component has been rendered
     useEffect(() => {
         lastpos.current = mesh.current.position.clone();
@@ -139,26 +125,53 @@ function Robot({
         lastrot.current = mesh.current.quaternion.clone();
         currentrot.current = lastrot.current.clone();
     }, []);
+
+    let lag = useRef(0.0); // Avoid stale closure
     // Is this racy?
-    useFrame(onFrame);
+    useFrame((_, delta) => {
+        if (tps.current == 0) return;
+        lag.current += delta;
+        let count = 0;
+        let t = 1 / tps.current;
+
+        while (lag.current >= t) {
+            if (count > 10) {
+                // Prevent infinite loop from crashing the system
+                throw new Error("Too many physics iterations in one frame");
+            }
+            internalOnTick();
+            if (onTick) {
+                onTick();
+            }
+            lag.current -= t;
+            count++;
+        }
+
+        let alpha = lag.current / t; // Linear interpolation value (should be betwee 0 and 1)
+        internalOnFrame(alpha);
+        if (onFrame) {
+            onFrame();
+        }
+    });
+
     return (
         <group position={position} rotation={rotation} ref={mesh}>
             <primitive
                 object={object.scene}
                 position={[0, 0, 0]}
-                rotation={[Math.PI / 2,Math.PI, 0]}
+                rotation={[Math.PI / 2, Math.PI, 0]}
                 scale={1}
             />
             <mesh scale={0} position={[0, 0, 0]} ref={lMesh}>
                 <planeGeometry args={[3, 3]} />
                 <meshBasicMaterial ref={lMat} color={"black"} />
             </mesh>
-            <mesh scale={0} position={[1, 1, 0]} ref={rMesh}>
-                <planeGeometry args={[1, 1]} />
+            <mesh scale={1} position={[0.9, 1.95, 5]} ref={rMesh}>
+                <planeGeometry args={[0.5, 0.5]} />
                 <meshBasicMaterial ref={rMat} color={"white"} />
             </mesh>
-            <mesh scale={0} position={[-1, 1, 0]} ref={lMesh}>
-                <planeGeometry args={[1, 1]} />
+            <mesh scale={1} position={[-0.9, 1.95, 5]} ref={lMesh}>
+                <planeGeometry args={[0.5, 0.5]} />
                 <meshBasicMaterial ref={lMat} color={"white"} />
             </mesh>
         </group>

@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { SVGResult } from "three-stdlib";
 import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { Controls } from "./controls";
 
 const Camera = () => {
     const camera = useRef<THREE.OrthographicCamera>(null!);
@@ -114,9 +115,13 @@ const Map = forwardRef<THREE.Mesh>((_, ref) => {
 
 export type GameProps = {
     update: Update;
+
+    onFrame?: Function;
+    onTick?: Function;
 };
 
-function Game({ update }: GameProps) {
+function Game({ update, onFrame, onTick }: GameProps) {
+    const tpsRef = useRef(30);
     const mapRef = useRef(null!);
     const result = useLoader(SVGLoader, "./map8.svg");
     const robot = useLoader(GLTFLoader, "./robot.glb");
@@ -125,17 +130,25 @@ function Game({ update }: GameProps) {
         <>
             <Canvas
                 orthographic
-                camera={{ position: [0, 0, 10], zoom: 20, up:[0,0,1] }}
+                camera={{ position: [0, 0, 10], zoom: 20, up: [0, 0, 1] }}
                 className=" bg-gray-50"
             >
                 <MapControls screenSpacePanning />
-                <ambientLight intensity={5}/>
+                <ambientLight intensity={5} />
                 <gridHelper args={[20, 20]} rotation={[Math.PI / 2, 0, 0]} />
                 <Svg ref={mapRef} src={result} />
-                <Robot object={robot} position={[-10, -5, 0.1]} map={mapRef} update={update} />
+                <Robot
+                    tps={tpsRef}
+                    object={robot}
+                    position={[-10, -5, 0.1]}
+                    map={mapRef}
+                    update={update}
+                    onFrame={onFrame}
+                />
             </Canvas>
+            <Controls tps={tpsRef} />
         </>
     );
 }
-// 
+//
 export default Game;
