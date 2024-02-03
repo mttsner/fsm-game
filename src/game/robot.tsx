@@ -5,8 +5,10 @@ import {
     Euler,
     useFrame,
     useThree,
+    ObjectMap,
 } from "@react-three/fiber";
 import * as THREE from "three";
+import { GLTF } from "three/examples/jsm/Addons.js";
 
 function raycaster(course: MutableRefObject<THREE.Object3D>) {
     const { raycaster } = useThree();
@@ -39,13 +41,20 @@ function rotate(rotation: THREE.Quaternion, angle: number) {
 export type Update = (left: boolean, right: boolean) => [number, number];
 
 type RobotProps = {
+    object: GLTF & ObjectMap;
     map: MutableRefObject<THREE.Object3D>;
     update: Update;
     position?: Vector3;
     rotation?: Euler;
 };
 
-function Robot({ map, update, position = [0, 0, 0.1], rotation }: RobotProps) {
+function Robot({
+    map,
+    update,
+    position = [0, 0, 0.1],
+    rotation,
+    object,
+}: RobotProps) {
     const mesh = useRef<THREE.Group>(null!);
     const lMesh = useRef<THREE.Mesh>(null!);
     const lMat = useRef<THREE.MeshBasicMaterial>(null!);
@@ -134,15 +143,21 @@ function Robot({ map, update, position = [0, 0, 0.1], rotation }: RobotProps) {
     useFrame(onFrame);
     return (
         <group position={position} rotation={rotation} ref={mesh}>
-            <mesh position={[0, 0, 0]} ref={lMesh}>
+            <primitive
+                object={object.scene}
+                position={[0, 0, 0]}
+                rotation={[Math.PI / 2,Math.PI, 0]}
+                scale={1}
+            />
+            <mesh scale={0} position={[0, 0, 0]} ref={lMesh}>
                 <planeGeometry args={[3, 3]} />
                 <meshBasicMaterial ref={lMat} color={"black"} />
             </mesh>
-            <mesh position={[1, 1, 0]} ref={rMesh}>
+            <mesh scale={0} position={[1, 1, 0]} ref={rMesh}>
                 <planeGeometry args={[1, 1]} />
                 <meshBasicMaterial ref={rMat} color={"white"} />
             </mesh>
-            <mesh position={[-1, 1, 0]} ref={lMesh}>
+            <mesh scale={0} position={[-1, 1, 0]} ref={lMesh}>
                 <planeGeometry args={[1, 1]} />
                 <meshBasicMaterial ref={lMat} color={"white"} />
             </mesh>

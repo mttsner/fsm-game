@@ -5,6 +5,7 @@ import { forwardRef, useRef } from "react";
 import * as THREE from "three";
 import { SVGResult } from "three-stdlib";
 import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 const Camera = () => {
     const camera = useRef<THREE.OrthographicCamera>(null!);
@@ -118,15 +119,23 @@ export type GameProps = {
 function Game({ update }: GameProps) {
     const mapRef = useRef(null!);
     const result = useLoader(SVGLoader, "./map8.svg");
+    const robot = useLoader(GLTFLoader, "./robot.glb");
 
     return (
-        <Canvas orthographic camera={{ position: [0, 0, 1], zoom: 10 }} className="">
-            <MapControls screenSpacePanning />
-            <gridHelper args={[20, 20]} rotation={[Math.PI / 2, 0, 0]} />
-            <Svg ref={mapRef} src={result} />
-            <Robot position={[-10, -5, 0.1]} map={mapRef} update={update} />
-        </Canvas>
+        <>
+            <Canvas
+                orthographic
+                camera={{ position: [0, 0, 10], zoom: 20, up:[0,0,1] }}
+                className=" bg-gray-50"
+            >
+                <MapControls screenSpacePanning />
+                <ambientLight intensity={5}/>
+                <gridHelper args={[20, 20]} rotation={[Math.PI / 2, 0, 0]} />
+                <Svg ref={mapRef} src={result} />
+                <Robot object={robot} position={[-10, -5, 0.1]} map={mapRef} update={update} />
+            </Canvas>
+        </>
     );
 }
-
+// 
 export default Game;
