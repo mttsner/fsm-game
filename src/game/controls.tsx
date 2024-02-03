@@ -22,16 +22,18 @@ export const Controls = ({ tps }: ControlsParams) => {
     };
 
     const onForward = () => {
-        setOriginal(Math.min(base * 4, original * 2));
+        let t = Math.min(base * 4, original * 2)
+        setOriginal(t);
         if (!paused) {
-            tps.current = original;
+            tps.current = t;
         }
     };
 
     const onBackward = () => {
-        setOriginal(Math.max(base / 4, original / 2));
+        let t = Math.max(base / 4, original / 2)
+        setOriginal(t);
         if (!paused) {
-            tps.current = original;
+            tps.current = t;
         }
     };
 
