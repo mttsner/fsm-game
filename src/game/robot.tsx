@@ -130,6 +130,9 @@ function Robot({
     // Is this racy?
     useFrame((_, delta) => {
         if (tps.current == 0) return;
+        if (delta > 1/30) {
+            delta = 1/30
+        }
         lag.current += delta;
         let count = 0;
         let t = 1 / tps.current;
