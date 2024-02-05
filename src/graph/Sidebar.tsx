@@ -1,5 +1,5 @@
 import { DragEvent } from "react";
-import { NodeBase } from "./CustomNode";
+import { BaseNode } from "./nodes/Node";
 
 export default () => {
     const onDragStart = (event: DragEvent, nodeType: string) => {
@@ -9,30 +9,36 @@ export default () => {
 
     return (
         <>
-            <NodeBase
+            <BaseNode
                 draggable
                 onDragStart={(event) => onDragStart(event, "forward")}
             >
                 Forward
-            </NodeBase>
-            <NodeBase
+            </BaseNode>
+            <BaseNode
                 draggable
                 onDragStart={(event) => onDragStart(event, "still")}
             >
                 Still
-            </NodeBase>
-            <NodeBase
+            </BaseNode>
+            <BaseNode
                 draggable
                 onDragStart={(event) => onDragStart(event, "left")}
             >
                 Left
-            </NodeBase>
-            <NodeBase
+            </BaseNode>
+            <BaseNode
                 draggable
                 onDragStart={(event) => onDragStart(event, "right")}
             >
                 Right
-            </NodeBase>
+            </BaseNode>
+            <BaseNode
+                draggable
+                onDragStart={(event) => onDragStart(event, "count")}
+            >
+                Count
+            </BaseNode>
         </>
     );
 };

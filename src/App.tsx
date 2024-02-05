@@ -1,70 +1,70 @@
 import { Suspense, useRef } from "react";
-import { State, Transition } from "./game/fsm.ts";
 
 import "reactflow/dist/style.css";
 import "./style.css";
 import Game from "./game/map.tsx";
 import Graph, { GraphHandle } from "./graph/Graph.tsx";
 import NodePicker from "./graph/Sidebar.tsx";
+import { Edge, Node } from "reactflow";
+import { EdgeData, NodeData } from "./graph/nodes/Node.tsx";
 
-const initialNodes: State[] = [
+const initialNodes: Node<NodeData>[] = [
     {
         id: "1",
-        type: "custom",
+        type: "move",
         position: { x: 0, y: 0 },
         data: {
             label: "Forward",
-            activated: false,
-            transitions: [],
-            update: () => {
-                return [0.1, 0];
-            },
+            move: 0.1,
+            turn: 0,
         },
     },
     {
         id: "2",
-        type: "custom",
+        type: "move",
         position: { x: 250, y: 320 },
         data: {
             label: "Left",
-            activated: false,
-            transitions: [],
-            update: () => {
-                return [0, 0];
-            },
+            move: 0,
+            turn: -0.05,
         },
     },
     {
         id: "3",
-        type: "custom",
+        type: "move",
         position: { x: 40, y: 300 },
         data: {
             label: "Right",
-            activated: false,
-            transitions: [],
-            update: () => {
-                return [0, -0.05];
-            },
+            move: 0,
+            turn: -0.05,
         },
     },
     {
         id: "4",
-        type: "custom",
+        type: "move",
         position: { x: 300, y: 0 },
         data: {
             label: "Still",
-            activated: false,
-            transitions: [],
-            update: () => {
-                return [0, 0];
-            },
+            move: 0,
+            turn: 0,
         },
     },
+    {
+        id: "5",
+        type: "count",
+        position: { x: 50, y: 50 },
+        data: {
+            count: 0,
+            move: 0,
+            turn: 0,
+        }
+    }
 ];
 
-const initialEdges: Transition[] = [
+const initialEdges: Edge<EdgeData>[] = [
     {
         id: "1-3",
+        type: "move",
         source: "1",
         target: "3",
         data: {
@@ -74,6 +74,7 @@ const initialEdges: Transition[] = [
     },
     {
         id: "3-4",
+        type: "move",
         source: "3",
         target: "4",
         data: {
@@ -83,6 +84,7 @@ const initialEdges: Transition[] = [
     },
     {
         id: "4-1",
+        type: "move",
         source: "4",
         target: "1",
         data: {

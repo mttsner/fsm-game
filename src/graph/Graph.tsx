@@ -6,7 +6,6 @@ import {
     useRef,
     useState,
 } from "react";
-import { State, Transition } from "../game/fsm.ts";
 
 import ReactFlow, {
     addEdge,
@@ -17,12 +16,12 @@ import ReactFlow, {
     Edge,
     Node,
     ReactFlowInstance,
-    XYPosition,
 } from "reactflow";
 
-import CustomNode from "./CustomNode.tsx";
-import FloatingEdge from "./FloatingEdge.tsx";
-import CustomConnectionLine from "./CustomConnectionLine.tsx";
+import CustomConnectionLine from "./ConnectionLine.tsx";
+import { MoveEdge, MoveEdgeData, MoveNode } from "./nodes/Move.tsx";
+import { CountData, CountEdge, CountNode } from "./nodes/Count.tsx";
+import { CreateNode, EdgeData, NodeData } from "./nodes/Node.tsx";
 
 const connectionLineStyle = {
     strokeWidth: 3,
@@ -30,11 +29,13 @@ const connectionLineStyle = {
 };
 
 const nodeTypes = {
-    custom: CustomNode,
+    move: MoveNode,
+    count: CountNode,
 };
 
 const edgeTypes = {
-    floating: FloatingEdge,
+    move: MoveEdge,
+    count: MoveEdge,
 };
 
 const defaultEdgeOptions = {
@@ -48,72 +49,44 @@ const defaultEdgeOptions = {
 
 const proOptions = { hideAttribution: true };
 
-function game(nodes: State[], edges: Transition[]) {
+function game(nodes: Node<NodeData>[], edges: Edge<EdgeData>[]) {
     let currentState = useRef(nodes[0]);
+    const update = (left: boolean, right: boolean): [number, number] => {
+        let edge = edges
+            .filter((edge) => edge.source === currentState.current.id)
+            .find((edge) => {
+                switch (edge.type) {
+                    case "move":
+                        let moveData = edge.data as MoveEdgeData
+                        return moveData.left === left && moveData.right === right
+                    case "count":
+                        let countData = edge.data as CountEdge
+                        let nodeData = currentState.current.data as CountData
 
-    const update = (left: boolean, right: boolean) => {
-        let edge = edges.find(
-            (edge) =>
-                edge.source === currentState.current.id &&
-                edge.data?.left == left &&
-                edge.data?.right == right
-        );
+                        if (countData.condition === nodeData.count) {
+                            (currentState.current.data as CountData).count++
+                            return true
+                        }
+                        return false
+                }
+            });
 
+        let { move, turn } = currentState.current.data;
         if (edge === undefined) {
-            return currentState.current.data.update(left, right);
+            return [move, turn];
         }
 
         let state = nodes.find((state) => state.id === edge?.target);
 
         if (state !== undefined) {
             currentState.current = state;
+            ({ move, turn } = currentState.current.data);
         }
 
-        return currentState.current.data.update(left, right);
+        return [move, turn];
     };
     return { currentState, update };
 }
-
-const createNode = (position: XYPosition, type: string, id: string) => {
-    const node: State = {
-        id: id,
-        type: "custom",
-        position,
-        data: {
-            label: "",
-            activated: false,
-            transitions: [],
-            update: () => [0, 0],
-        },
-    };
-
-    switch (type) {
-        case "forward":
-            node.data.label = "Forward";
-            node.data.update = () => {
-                return [0.1, 0];
-            };
-            break;
-        case "still":
-            node.data.label = "Still";
-            break;
-        case "left":
-            node.data.label = "Left";
-            node.data.update = () => {
-                return [0, 0.05];
-            };
-            break;
-        case "right":
-            node.data.label = "Right";
-            node.data.update = () => {
-                return [0, -0.05];
-            };
-            break;
-        default:
-            throw new Error("Invalid node type");
-    }
-    return node;
-};
 
 export type GraphHandle = {
     update: (left: boolean, right: boolean) => [number, number];
@@ -121,8 +94,8 @@ export type GraphHandle = {
 };
 
 export type GraphProps = {
-    initialNodes: Node[];
-    initialEdges: Edge[];
+    initialNodes: Node<NodeData>[];
+    initialEdges: Edge<EdgeData>[];
 };
 
 const Graph = forwardRef<GraphHandle, GraphProps>(
@@ -130,7 +103,7 @@ const Graph = forwardRef<GraphHandle, GraphProps>(
         const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
         const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
         const [reactFlowInstance, setReactFlowInstance] =
-            useState<ReactFlowInstance>(null!);
+            useState<ReactFlowInstance<NodeData>>(null!);
 
         let count = initialNodes.length + 1;
         const getId = () => `${count++}`;
@@ -159,18 +132,40 @@ const Graph = forwardRef<GraphHandle, GraphProps>(
                 if (!params.source || !params.target) {
                     return;
                 }
-                const edge: Transition = {
+
+                let source = nodes.find((node) => node.id == params.source)
+                if (!source) {
+                    return;
+                }
+
+                let data: EdgeData
+                switch (source.type) {
+                    case "move":
+                        data = {
+                            left: false,
+                            right: false
+                        }
+                        break;
+                    case "count":
+                        data = {
+                            condition: 0
+                        }
+                        break;
+                    default:
+                        return
+                }
+
+                const edge: Edge<EdgeData> = {
                     id: `${params.source}-${params.target}`,
+                    type: source.type,
                     source: params.source,
                     target: params.target,
-                    data: {
-                        left: false,
-                        right: false,
-                    },
+                    data: data,
                 };
+                console.log(edge)
                 setEdges((eds) => addEdge(edge, eds));
             },
-            [setEdges]
+            [setEdges, nodes]
         );
 
         const onDrop = useCallback(
@@ -192,7 +187,7 @@ const Graph = forwardRef<GraphHandle, GraphProps>(
                 });
 
                 setNodes((nds) =>
-                    nds.concat(createNode(position, type, getId()))
+                    nds.concat(CreateNode(type, getId(), position))
                 );
             },
             [reactFlowInstance]

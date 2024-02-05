@@ -4,8 +4,6 @@ import {
     Node,
     useStore,
     useReactFlow,
-    getMarkerEnd,
-    MarkerType,
 } from "reactflow";
 
 function getNodeIntersection(

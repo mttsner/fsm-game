@@ -31,7 +31,7 @@ type SvgProps = {
 };
 
 const Svg = forwardRef<THREE.Group, SvgProps>(({ src }, ref) => {
-    const material = new THREE.MeshBasicMaterial({ color: "yellow" });
+    const material = new THREE.MeshBasicMaterial({ color: "black" });
 
     return (
         <group ref={ref}>
@@ -125,6 +125,7 @@ function Game({ update, onFrame, onTick }: GameProps) {
     const mapRef = useRef(null!);
     const result = useLoader(SVGLoader, "./map8.svg");
     const robot = useLoader(GLTFLoader, "./robot.glb");
+    const debug = false
 
     return (
         <>
@@ -135,7 +136,7 @@ function Game({ update, onFrame, onTick }: GameProps) {
             >
                 <MapControls screenSpacePanning />
                 <ambientLight intensity={5} />
-                <gridHelper args={[20, 20]} rotation={[Math.PI / 2, 0, 0]} />
+                {debug && <gridHelper args={[20, 20]} rotation={[Math.PI / 2, 0, 0]} /> }
                 <Svg ref={mapRef} src={result} />
                 <Robot
                     tps={tpsRef}

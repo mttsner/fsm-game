@@ -1,10 +1,10 @@
-import { EdgeData } from '../game/fsm';
+import { MoveEdgeData } from "./nodes/Move";
 
 type ControllerProps = {
-    labelX: number,
-    labelY: number,
-    data: EdgeData
-}
+    labelX: number;
+    labelY: number;
+    data: MoveEdgeData;
+};
 
 export default function Controller({ labelX, labelY, data }: ControllerProps) {
     return (
@@ -20,7 +20,7 @@ export default function Controller({ labelX, labelY, data }: ControllerProps) {
                     <input
                         type="checkbox"
                         checked={data.left}
-                        onChange={(e) => data.left = e.target.checked}
+                        onChange={(e) => (data.left = e.target.checked)}
                         className=" focus outline outline-neutral-500 bg-neutral-700 border-neutral-700 border-2 appearance-none h-4 w-4 rounded-full checked:bg-blue-600 checked:outline-white"
                     ></input>
                 </label>
@@ -28,11 +28,10 @@ export default function Controller({ labelX, labelY, data }: ControllerProps) {
                     <input
                         type="checkbox"
                         checked={data.right}
-                        onChange={(e) => data.right = e.target.checked}
+                        onChange={(e) => (data.right = e.target.checked)}
                         className="outline outline-neutral-500 bg-neutral-700 border-neutral-700 border-2 appearance-none h-4 w-4 rounded-full checked:bg-yellow-600 checked:outline-white"
                     ></input>
                 </label>
-                
             </div>
         </div>
     );
