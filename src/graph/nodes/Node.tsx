@@ -8,10 +8,10 @@ import {
     MoveData,
     MoveEdgeData,
 } from "./Move";
-import { CountData, CountEdge, CreateCount } from "./Count";
+import { CountData, CountEdgeData, CreateCount } from "./Count";
 
 export type NodeData = MoveData | CountData;
-export type EdgeData = MoveEdgeData | CountEdge
+export type EdgeData = MoveEdgeData | CountEdgeData
 
 export type BaseData = {
     activated?: boolean;

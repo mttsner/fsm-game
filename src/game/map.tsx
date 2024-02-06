@@ -134,7 +134,7 @@ function Game({ update, onFrame, onTick }: GameProps) {
                 camera={{ position: [0, 0, 10], zoom: 20, up: [0, 0, 1] }}
                 className=" bg-gray-50"
             >
-                <MapControls screenSpacePanning />
+                <MapControls />
                 <ambientLight intensity={5} />
                 {debug && <gridHelper args={[20, 20]} rotation={[Math.PI / 2, 0, 0]} /> }
                 <Svg ref={mapRef} src={result} />

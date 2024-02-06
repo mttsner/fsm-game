@@ -20,7 +20,7 @@ import ReactFlow, {
 
 import CustomConnectionLine from "./ConnectionLine.tsx";
 import { MoveEdge, MoveEdgeData, MoveNode } from "./nodes/Move.tsx";
-import { CountData, CountEdge, CountNode } from "./nodes/Count.tsx";
+import { CountData, CountEdge, CountEdgeData, CountNode } from "./nodes/Count.tsx";
 import { CreateNode, EdgeData, NodeData } from "./nodes/Node.tsx";
 
 const connectionLineStyle = {
@@ -35,7 +35,7 @@ const nodeTypes = {
 
 const edgeTypes = {
     move: MoveEdge,
-    count: MoveEdge,
+    count: CountEdge,
 };
 
 const defaultEdgeOptions = {
@@ -60,14 +60,32 @@ function game(nodes: Node<NodeData>[], edges: Edge<EdgeData>[]) {
                         let moveData = edge.data as MoveEdgeData
                         return moveData.left === left && moveData.right === right
                     case "count":
-                        let countData = edge.data as CountEdge
+                        let countData = edge.data as CountEdgeData
                         let nodeData = currentState.current.data as CountData
+                        let condition = false
 
-                        if (countData.condition === nodeData.count) {
-                            (currentState.current.data as CountData).count++
-                            return true
+                        switch (countData.compare) {
+                            case "==":
+                                condition = nodeData.count === countData.condition
+                                break;
+                            case "<":
+                                condition = nodeData.count < countData.condition
+                                break
+                            case ">":
+                                condition = nodeData.count > countData.condition
+                                break
+                            case "<=":
+                                condition = nodeData.count <= countData.condition
+                                break
+                            case ">=":
+                                condition = nodeData.count >= countData.condition
+                                break
                         }
-                        return false
+
+                        if (condition) {
+                            (currentState.current.data as CountData).count++
+                        }
+                        return condition
                 }
             });
 
@@ -143,12 +161,13 @@ const Graph = forwardRef<GraphHandle, GraphProps>(
                     case "move":
                         data = {
                             left: false,
-                            right: false
+                            right: false,
                         }
                         break;
                     case "count":
                         data = {
-                            condition: 0
+                            condition: 0,
+                            compare: "==",
                         }
                         break;
                     default:
