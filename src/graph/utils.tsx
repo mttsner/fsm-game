@@ -12,10 +12,10 @@ function getNodeIntersection(intersectionNode, targetNode) {
 
   const radius = intersectionNodeWidth / 2;
 
-  const cx = intersectionNodePosition.x + radius
-  const cy = intersectionNodePosition.y + radius
-  const ex = targetPosition.x + radius
-  const ey = targetPosition.y + radius
+  const cx = intersectionNodePosition.x
+  const cy = intersectionNodePosition.y
+  const ex = targetPosition.x
+  const ey = targetPosition.y
 
   const deltaY = ey - cy;
   const deltaX = ex - cx;

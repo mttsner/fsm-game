@@ -46,7 +46,7 @@ export const GraphNode = ({
         >
             {connectionNodeId !== id && (
                 <Handle
-                    className="opacity-0 w-full h-full"
+                    className="opacity-0 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 w-full h-full"
                     position={Position.Left}
                     type="target"
                     isConnectableStart={isConnecting}
@@ -54,7 +54,7 @@ export const GraphNode = ({
             )}
             {!isConnecting && (
                 <Handle
-                    className="opacity-0 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 w-4/5 h-4/5 "
+                    className="opacity-0 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 w-4/5 h-4/5"
                     position={Position.Right}
                     type="source"
                 />

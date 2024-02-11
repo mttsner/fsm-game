@@ -234,6 +234,7 @@ const Graph = forwardRef<GraphHandle, GraphProps>(
                 onDrop={onDrop}
                 onDragOver={onDragOver}
                 proOptions={proOptions}
+                nodeOrigin={[0.5, 0.5]}
             />
         );
     }

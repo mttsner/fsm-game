@@ -57,8 +57,8 @@ function CustomConnectionLine({
         const toNode = reactflow.getNode(connectionEndHandle.nodeId);
         target = getNodeIntersection(
             fromNode,
-            toNode!.position.x+fromNode.width!/2,
-            toNode!.position.y+fromNode.width!/2,
+            toNode!.position.x,
+            toNode!.position.y,
             fromX,
             fromY,
         );
@@ -66,8 +66,8 @@ function CustomConnectionLine({
             fromNode,
             fromX,
             fromY,
-            toNode!.position.x+fromNode.width!/2,
-            toNode!.position.y+fromNode.width!/2,
+            toNode!.position.x,
+            toNode!.position.y,
         );
     } else {
         source = getNodeIntersection(fromNode, fromX, fromY, toX, toY);
