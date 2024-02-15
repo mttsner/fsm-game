@@ -102,11 +102,11 @@ function Robot({
         let rSensor = raycast(right).length > 0;
         // Update sensor colors to indicate path detection
         lMat.current.color = lSensor
-            ? new THREE.Color("yellow")
-            : new THREE.Color("red");
+            ? new THREE.Color("red")
+            : new THREE.Color("gray");
         rMat.current.color = rSensor
-            ? new THREE.Color("blue")
-            : new THREE.Color("red");
+            ? new THREE.Color("green")
+            : new THREE.Color("gray");
         // Ask external code for how to update the robots position
         let [speed, angle] = update(lSensor, rSensor);
         // Save the current robot position and rotation as the last state

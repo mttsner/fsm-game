@@ -24,7 +24,7 @@ export function BaseNode(props: HtmlHTMLAttributes<HTMLDivElement>) {
         <div
             {...props}
             className={
-                "bg-neutral-800 rounded-full border-4 w-36 h-36 flex overflow-hidden justify-center items-center relative font-bold"
+                `bg-background border-foreground rounded-full border-4 w-36 h-36 flex overflow-hidden justify-center items-center relative font-bold ${props.className}`
             }
         />
     );
@@ -41,7 +41,7 @@ export const GraphNode = ({
     return (
         <BaseNode
             style={{
-                borderColor: data.activated ? "red" : "white",
+                borderColor: data.activated ? "red" : "var(--foreground)",
             }}
         >
             {connectionNodeId !== id && (

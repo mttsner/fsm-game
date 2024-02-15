@@ -4,6 +4,7 @@ import {
     getStraightPath,
     EdgeProps,
     EdgeLabelRenderer,
+    BaseEdge as FlowEdge,
 } from "reactflow";
 import { getEdgeParams } from "../utils";
 
@@ -37,10 +38,9 @@ export function BaseEdge({
 
     return (
         <>
-            <path
+            <FlowEdge
                 id={id}
-                className="react-flow__edge-path"
-                d={edgePath}
+                path={edgePath}
                 markerEnd={markerEnd}
                 style={style}
             />
@@ -50,7 +50,7 @@ export function BaseEdge({
                         transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
                         pointerEvents: "all",
                     }}
-                    className="bg-neutral-800 border-white border-2 flex flex-col rounded-md absolute nodrag nopan"
+                    className="bg-background border-foreground border-2 flex flex-col rounded-md absolute nodrag nopan"
                 >
                     {children}
                 </div>

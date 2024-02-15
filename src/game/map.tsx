@@ -1,12 +1,18 @@
 import { Canvas, useLoader } from "@react-three/fiber";
-import { MapControls, OrthographicCamera, useHelper } from "@react-three/drei";
+import {
+    MapControls,
+    OrthographicCamera,
+    Stats,
+    useHelper,
+} from "@react-three/drei";
 import Robot, { Update } from "./robot";
-import { forwardRef, useRef } from "react";
+import { MutableRefObject, forwardRef, useEffect, useRef } from "react";
 import * as THREE from "three";
 import { SVGResult } from "three-stdlib";
 import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { Controls } from "./controls";
+import { useTheme } from "@/components/theme";
 
 const Camera = () => {
     const camera = useRef<THREE.OrthographicCamera>(null!);
@@ -31,7 +37,14 @@ type SvgProps = {
 };
 
 const Svg = forwardRef<THREE.Group, SvgProps>(({ src }, ref) => {
-    const material = new THREE.MeshBasicMaterial({ color: "black" });
+    const matRef = useRef(new THREE.MeshBasicMaterial({ color: "black" }));
+    const theme = useTheme();
+    const root = document.documentElement;
+
+    useEffect(() => {
+        const color = getComputedStyle(root).getPropertyValue('--foreground');
+        matRef.current.color.set(`hsl(${color.replaceAll(" ", ",")})`);
+    }, [theme]);
 
     return (
         <group ref={ref}>
@@ -51,7 +64,7 @@ const Svg = forwardRef<THREE.Group, SvgProps>(({ src }, ref) => {
                         <mesh
                             key={geometry.uuid}
                             geometry={geometry}
-                            material={material}
+                            material={matRef.current}
                         />
                     );
                 })
@@ -118,37 +131,40 @@ export type GameProps = {
 
     onFrame?: Function;
     onTick?: Function;
+    tpsRef: MutableRefObject<number>;
 };
 
-function Game({ update, onFrame, onTick }: GameProps) {
-    const tpsRef = useRef(30);
-    const mapRef = useRef(null!);
+function Game({ update, onFrame, tpsRef }: GameProps) {
+    const mapRef = useRef<THREE.Group>(null!);
     const result = useLoader(SVGLoader, "./map8.svg");
     const robot = useLoader(GLTFLoader, "./robot.glb");
-    const debug = false
+    const debug = false;
 
     return (
-        <>
             <Canvas
                 orthographic
                 camera={{ position: [0, 0, 10], zoom: 20, up: [0, 0, 1] }}
-                className=" bg-gray-50"
+                resize={{ debounce: 1 }}
             >
-                <MapControls />
+                {debug && <Stats showPanel={0} className="stats" />}
+                <MapControls zoomToCursor zoomSpeed={.5} maxZoom={30} minZoom={6} enableRotate={false}/>
                 <ambientLight intensity={5} />
-                {debug && <gridHelper args={[20, 20]} rotation={[Math.PI / 2, 0, 0]} /> }
+                {debug && (
+                    <gridHelper
+                        args={[20, 20]}
+                        rotation={[Math.PI / 2, 0, 0]}
+                    />
+                )}
                 <Svg ref={mapRef} src={result} />
                 <Robot
                     tps={tpsRef}
                     object={robot}
-                    position={[-10, -5, 0.1]}
+                    position={[-10, -8, 0.1]}
                     map={mapRef}
                     update={update}
                     onFrame={onFrame}
                 />
             </Canvas>
-            <Controls tps={tpsRef} />
-        </>
     );
 }
 //

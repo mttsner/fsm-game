@@ -25,7 +25,7 @@ import { CreateNode, EdgeData, NodeData } from "./nodes/Node.tsx";
 
 const connectionLineStyle = {
     strokeWidth: 3,
-    stroke: "white",
+    stroke: "hsl(var(--foreground))",
 };
 
 const nodeTypes = {
@@ -39,11 +39,11 @@ const edgeTypes = {
 };
 
 const defaultEdgeOptions = {
-    style: { strokeWidth: 3, stroke: "white" },
+    style: { strokeWidth: 3, stroke: "hsl(var(--foreground))" },
     type: "floating",
     markerEnd: {
         type: MarkerType.ArrowClosed,
-        color: "white",
+        color: "hsl(var(--foreground))",
     },
 };
 

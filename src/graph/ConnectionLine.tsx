@@ -86,7 +86,6 @@ function CustomConnectionLine({
                 fill="none"
                 className="animated"
                 d={edgePath}
-                markerEnd={valid ? "url(#1__color=white&type=arrowclosed)": ""}
                 style={connectionLineStyle}
             />
         </g>
