@@ -1,9 +1,7 @@
 import { Canvas, useLoader } from "@react-three/fiber";
 import {
     MapControls,
-    OrthographicCamera,
     Stats,
-    useHelper,
 } from "@react-three/drei";
 import Robot, { Update } from "./robot";
 import { MutableRefObject, forwardRef, useEffect, useRef } from "react";
@@ -12,24 +10,6 @@ import { SVGResult } from "three-stdlib";
 import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { useTheme } from "@/components/theme";
-
-const Camera = () => {
-    const camera = useRef<THREE.OrthographicCamera>(null!);
-    useHelper(camera, THREE.CameraHelper);
-    return (
-        <OrthographicCamera
-            manual
-            left={-12}
-            right={12}
-            top={12}
-            bottom={-12}
-            far={1}
-            ref={camera}
-            position={[0, 0, 1]}
-            scale={[1, 1, 1]}
-        />
-    );
-};
 
 type SvgProps = {
     src: SVGResult;
@@ -70,59 +50,6 @@ const Svg = forwardRef<THREE.Group, SvgProps>(({ src }, ref) => {
             )}
         </group>
     );
-});
-
-const Map = forwardRef<THREE.Mesh>((_, ref) => {
-    const leftup = new THREE.Vector3(-10, 10, 0);
-    const leftbottom = new THREE.Vector3(-10, -10, 0);
-    const rightup = new THREE.Vector3(10, 10, 0);
-    const rightbottom = new THREE.Vector3(10, -10, 0);
-
-    const width = 0.5;
-
-    // Hardcoded because its the easiest way for testing
-    const vertices = [
-        // Left
-        leftup.clone().add(new THREE.Vector3(width, -width, 0)),
-        leftup,
-        leftbottom,
-
-        leftup.clone().add(new THREE.Vector3(width, -width, 0)),
-        leftbottom,
-        leftbottom.clone().add(new THREE.Vector3(width, width, 0)),
-
-        // Top
-        leftup,
-        leftup.clone().add(new THREE.Vector3(width, -width, 0)),
-        rightup,
-
-        leftup.clone().add(new THREE.Vector3(width, -width, 0)),
-        rightup.clone().add(new THREE.Vector3(-width, -width, 0)),
-        rightup,
-
-        // Right
-        rightup,
-        rightup.clone().add(new THREE.Vector3(-width, -width, 0)),
-        rightbottom,
-
-        rightup.clone().add(new THREE.Vector3(-width, -width, 0)),
-        rightbottom.clone().add(new THREE.Vector3(-width, width, 0)),
-        rightbottom,
-
-        // Bottom
-        rightbottom,
-        rightbottom.clone().add(new THREE.Vector3(-width, width, 0)),
-        leftbottom,
-
-        leftbottom,
-        rightbottom.clone().add(new THREE.Vector3(-width, width, 0)),
-        leftbottom.clone().add(new THREE.Vector3(width, width, 0)),
-    ];
-
-    const geometry = new THREE.BufferGeometry().setFromPoints(vertices);
-    const material = new THREE.MeshBasicMaterial({ color: "red" });
-
-    return <mesh ref={ref} geometry={geometry} material={material} />;
 });
 
 export type GameProps = {

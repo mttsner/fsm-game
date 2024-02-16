@@ -1,6 +1,5 @@
 import { MutableRefObject, useEffect, useRef } from "react";
 import {
-    RootState,
     Vector3,
     Euler,
     useFrame,
@@ -9,7 +8,6 @@ import {
 } from "@react-three/fiber";
 import * as THREE from "three";
 import { GLTF } from "three/examples/jsm/Addons.js";
-import { useStateStore } from "@/graph/Graph";
 
 function raycaster(course: MutableRefObject<THREE.Object3D>) {
     const { raycaster } = useThree();
