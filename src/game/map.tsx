@@ -11,7 +11,6 @@ import * as THREE from "three";
 import { SVGResult } from "three-stdlib";
 import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { Controls } from "./controls";
 import { useTheme } from "@/components/theme";
 
 const Camera = () => {
@@ -42,7 +41,7 @@ const Svg = forwardRef<THREE.Group, SvgProps>(({ src }, ref) => {
     const root = document.documentElement;
 
     useEffect(() => {
-        const color = getComputedStyle(root).getPropertyValue('--foreground');
+        const color = getComputedStyle(root).getPropertyValue("--foreground");
         matRef.current.color.set(`hsl(${color.replaceAll(" ", ",")})`);
     }, [theme]);
 
@@ -141,30 +140,33 @@ function Game({ update, onFrame, tpsRef }: GameProps) {
     const debug = false;
 
     return (
-            <Canvas
-                orthographic
-                camera={{ position: [0, 0, 10], zoom: 20, up: [0, 0, 1] }}
-                resize={{ debounce: 1 }}
-            >
-                {debug && <Stats showPanel={0} className="stats" />}
-                <MapControls zoomToCursor zoomSpeed={.5} maxZoom={30} minZoom={6} enableRotate={false}/>
-                <ambientLight intensity={5} />
-                {debug && (
-                    <gridHelper
-                        args={[20, 20]}
-                        rotation={[Math.PI / 2, 0, 0]}
-                    />
-                )}
-                <Svg ref={mapRef} src={result} />
-                <Robot
-                    tps={tpsRef}
-                    object={robot}
-                    position={[-10, -8, 0.1]}
-                    map={mapRef}
-                    update={update}
-                    onFrame={onFrame}
-                />
-            </Canvas>
+        <Canvas
+            orthographic
+            camera={{ position: [0, 0, 10], zoom: 20, up: [0, 0, 1] }}
+            resize={{ debounce: 1 }}
+        >
+            {debug && <Stats showPanel={0} className="stats" />}
+            <MapControls
+                zoomToCursor
+                zoomSpeed={0.5}
+                maxZoom={30}
+                minZoom={6}
+                enableRotate={false}
+            />
+            <ambientLight intensity={5} />
+            {debug && (
+                <gridHelper args={[20, 20]} rotation={[Math.PI / 2, 0, 0]} />
+            )}
+            <Svg ref={mapRef} src={result} />
+            <Robot
+                tps={tpsRef}
+                object={robot}
+                position={[-10, -8, 0.1]}
+                map={mapRef}
+                update={update}
+                onFrame={onFrame}
+            />
+        </Canvas>
     );
 }
 //

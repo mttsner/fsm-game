@@ -1,5 +1,12 @@
 import { HtmlHTMLAttributes, PropsWithChildren } from "react";
-import { Handle, Node, NodeProps, Position, XYPosition, useStore } from "reactflow";
+import {
+    Handle,
+    Node,
+    NodeProps,
+    Position,
+    XYPosition,
+    useStore,
+} from "reactflow";
 import {
     CreateForward,
     CreateLeft,
@@ -9,9 +16,10 @@ import {
     MoveEdgeData,
 } from "./Move";
 import { CountData, CountEdgeData, CreateCount } from "./Count";
+import { useStateStore } from "../Graph";
 
 export type NodeData = MoveData | CountData;
-export type EdgeData = MoveEdgeData | CountEdgeData
+export type EdgeData = MoveEdgeData | CountEdgeData;
 
 export type BaseData = {
     activated?: boolean;
@@ -23,25 +31,20 @@ export function BaseNode(props: HtmlHTMLAttributes<HTMLDivElement>) {
     return (
         <div
             {...props}
-            className={
-                `bg-background border-foreground rounded-full border-4 w-36 h-36 flex overflow-hidden justify-center items-center relative font-bold ${props.className}`
-            }
+            className={`bg-background border-foreground rounded-full border-4 w-36 h-36 flex overflow-hidden justify-center items-center relative font-bold ${props.className}`}
         />
     );
 }
 
-export const GraphNode = ({
-    id,
-    data,
-    children,
-}: PropsWithChildren<NodeProps>) => {
+export const GraphNode = ({ id, children }: PropsWithChildren<NodeProps>) => {
     const connectionNodeId = useStore((state) => state.connectionNodeId);
+    const currentId = useStateStore((state) => state.id);
     const isConnecting = !!connectionNodeId;
 
     return (
         <BaseNode
             style={{
-                borderColor: data.activated ? "red" : "var(--foreground)",
+                borderColor: currentId === id ? "red" : "var(--foreground)",
             }}
         >
             {connectionNodeId !== id && (
@@ -64,32 +67,36 @@ export const GraphNode = ({
     );
 };
 
-export const CreateNode = (kind: string, id: string, position: XYPosition): Node<NodeData> => {
+export const CreateNode = (
+    kind: string,
+    id: string,
+    position: XYPosition
+): Node<NodeData> => {
     let data: NodeData;
     let type: string;
     switch (kind) {
         case "forward":
             data = CreateForward();
-            type = "move"
+            type = "move";
             break;
         case "still":
             data = CreateStill();
-            type = "move"
+            type = "move";
             break;
         case "left":
             data = CreateLeft();
-            type = "move"
+            type = "move";
             break;
         case "right":
             data = CreateRight();
-            type = "move"
+            type = "move";
             break;
         case "count":
             data = CreateCount();
-            type = "count"
-            break
+            type = "count";
+            break;
         default:
-            throw new Error("Invalid node type")
+            throw new Error("Invalid node type");
     }
 
     return {

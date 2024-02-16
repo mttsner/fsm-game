@@ -1,0 +1,66 @@
+{
+    "nodes": [
+        {
+            "id": "1",
+            "type": "move",
+            "position": { "x": 0, "y": 0 },
+            "data": {
+                "label": "Forward",
+                "move": 0.1,
+                "turn": 0
+            }
+        },
+        {
+            "id": "2",
+            "type": "move",
+            "position": { "x": 150, "y": 250 },
+            "data": {
+                "label": "Right",
+                "move": 0,
+                "turn": -0.05
+            }
+        },
+        {
+            "id": "3",
+            "type": "move",
+            "position": { "x": 300, "y": 0 },
+            "data": {
+                "label": "Still",
+                "move": 0,
+                "turn": 0
+            }
+        }
+    ],
+    "edges": [
+        {
+            "id": "1-2",
+            "type": "move",
+            "source": "1",
+            "target": "2",
+            "data": {
+                "left": false,
+                "right": true
+            }
+        },
+        {
+            "id": "2-3",
+            "type": "move",
+            "source": "2",
+            "target": "3",
+            "data": {
+                "left": false,
+                "right": false
+            }
+        },
+        {
+            "id": "3-1",
+            "type": "move",
+            "source": "3",
+            "target": "1",
+            "data": {
+                "left": false,
+                "right": false
+            }
+        }
+    ]
+}

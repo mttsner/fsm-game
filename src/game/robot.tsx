@@ -9,6 +9,7 @@ import {
 } from "@react-three/fiber";
 import * as THREE from "three";
 import { GLTF } from "three/examples/jsm/Addons.js";
+import { useStateStore } from "@/graph/Graph";
 
 function raycaster(course: MutableRefObject<THREE.Object3D>) {
     const { raycaster } = useThree();
@@ -130,8 +131,8 @@ function Robot({
     // Is this racy?
     useFrame((_, delta) => {
         if (tps.current == 0) return;
-        if (delta > 1/30) {
-            delta = 1/30
+        if (delta > 1 / 30) {
+            delta = 1 / 30;
         }
         lag.current += delta;
         let count = 0;
