@@ -136,9 +136,9 @@ function game(nodes: Node<NodeData>[], edges: Edge<EdgeData>[]) {
 }
 
 const fetchData = async (): Promise<[Node<NodeData>[], Edge<EdgeData>[]]> => {
-    let local = localStorage.getItem("data");
+    let local = sessionStorage.getItem("data");
     let flow;
-    console.log("fetch");
+
     if (local) {
         try {
             flow = JSON.parse(local);
@@ -148,7 +148,7 @@ const fetchData = async (): Promise<[Node<NodeData>[], Edge<EdgeData>[]]> => {
         try {
             const data = await fetch("./defaultdata.json");
             flow = await data.json();
-            localStorage.setItem("data", JSON.stringify(flow));
+            sessionStorage.setItem("data", JSON.stringify(flow));
         } catch (error) {
             return [[], []];
         }
@@ -176,7 +176,7 @@ const Graph = forwardRef<GraphHandle>((_, ref) => {
             return;
         }
         const flow = reactFlowInstance.toObject();
-        localStorage.setItem("data", JSON.stringify(flow));
+        sessionStorage.setItem("data", JSON.stringify(flow));
     }, [nodes, edges]);
 
     const setId = useStateStore((state) => state.setId);

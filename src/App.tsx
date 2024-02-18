@@ -37,7 +37,7 @@ const NodeMenu = () => (
 const App = () => {
     const updateRef = useRef<GraphHandle>(null!);
     const tpsRef = useRef(30);
-    console.log("App");
+
     return (
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
             <div className="flex flex-col h-screen w-screen grid-rows-3">
