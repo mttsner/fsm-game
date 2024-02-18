@@ -38,7 +38,7 @@ export const Controls = ({ tps }: ControlsParams) => {
     };
 
     return (
-        <div className="relative flex justify-center w-full h-[2.75rem] bottom-16">
+        <div className="relative flex justify-center w-full h-11 bottom-16">
             <div className="flex bg-gray-50 p-1 rounded-md drop-shadow-lg shadow-inner">
                 <BackwardIcon
                     onClick={onBackward}
@@ -46,18 +46,18 @@ export const Controls = ({ tps }: ControlsParams) => {
                         (original === base / 4
                             ? "text-zinc-900 bg-zinc-200 drop-shadow "
                             : "") +
-                        "text-slate-800 hover:text-zinc-900 m-[0.1rem] p-[0.2rem] rounded-md shadow shadow-zinc-200 transition-all duration-300 hover:bg-zinc-200 hover:drop-shadow"
+                        "h-8 w-8 flex-shrink-0 text-slate-800 hover:text-zinc-900 m-0.5 p-[0.2rem] rounded-md shadow shadow-zinc-200 transition-all duration-300 hover:bg-zinc-200 hover:drop-shadow"
                     }
                 />
                 {paused ? (
                     <PlayIcon
                         onClick={onPlay}
-                        className="text-slate-800 hover:text-zinc-900 m-[0.1rem] p-[0.2rem] mr-1 ml-1 rounded-md shadow shadow-zinc-200 transition-all duration-300 hover:bg-zinc-200 hover:drop-shadow"
+                        className="h-8 w-8 flex-shrink-0 text-slate-800 hover:text-zinc-900 m-0.5 p-[0.2rem] mr-1 ml-1 rounded-md shadow shadow-zinc-200 transition-all duration-300 hover:bg-zinc-200 hover:drop-shadow"
                     />
                 ) : (
                     <PauseIcon
                         onClick={onPause}
-                        className="text-slate-800 hover:text-zinc-900 m-[0.1rem] p-[0.2rem] mr-1 ml-1 rounded-md shadow shadow-zinc-200 transition-all duration-300 hover:bg-zinc-200 hover:drop-shadow"
+                        className="h-8 w-8 flex-shrink-0 text-slate-800 hover:text-zinc-900 m-0.5 p-[0.2rem] mr-1 ml-1 rounded-md shadow shadow-zinc-200 transition-all duration-300 hover:bg-zinc-200 hover:drop-shadow"
                     />
                 )}
                 <ForwardIcon
@@ -66,7 +66,7 @@ export const Controls = ({ tps }: ControlsParams) => {
                         (original === base * 4
                             ? "text-zinc-900 bg-zinc-200 drop-shadow "
                             : "") +
-                        "text-slate-800 hover:text-zinc-900 m-[0.1rem] p-[0.2rem] rounded-md shadow shadow-zinc-200 transition-all duration-300 hover:bg-zinc-200 hover:drop-shadow"
+                        "h-8 w-8 flex-shrink-0 text-slate-800 hover:text-zinc-900 m-0.5 p-[0.2rem] rounded-md shadow shadow-zinc-200 transition-all duration-300 hover:bg-zinc-200 hover:drop-shadow"
                     }
                 />
             </div>
