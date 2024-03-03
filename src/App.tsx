@@ -18,6 +18,8 @@ import {
 } from "./components/ui/dialog.tsx";
 import Info from "./info.mdx";
 import { ScrollArea } from "./components/ui/scroll-area.tsx";
+import { Github } from "lucide-react";
+import { Button } from "./components/ui/button.tsx";
 
 // Breaks in strict mode
 const DialogOpen = () => {
@@ -43,6 +45,11 @@ const Header = () => (
         <div className="text-sm self-end ml-1 font-orbitron">v0.1</div>
 
         <div className="ml-auto flex items-center">
+            <Button variant="outline" size="icon" className="border-none mr-2">
+                <a href="https://github.com/mttsner/fsm-game">
+                    <Github/>
+                </a>
+            </Button>
             <ModeToggle />
         </div>
     </header>
