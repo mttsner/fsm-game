@@ -75,3 +75,31 @@
     @apply bg-background text-foreground;
   }
 }
+
+h1 {
+  @apply text-2xl font-semibold leading-none tracking-tight sticky bg-background top-0 -translate-y-1 pt-1 pb-1
+}
+
+h2 {
+  @apply text-xl font-semibold leading-none tracking-tight sticky bg-background top-0 -translate-y-1 pt-1 pb-1
+}
+
+h3 {
+  @apply text-lg font-semibold leading-none tracking-tight sticky bg-background top-0 -translate-y-1 pt-1 pb-1
+}
+
+p {
+  @apply pb-2
+}
+
+ul {
+  @apply list-outside list-disc pl-4
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0; 
+}

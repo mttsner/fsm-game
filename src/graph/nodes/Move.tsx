@@ -17,6 +17,7 @@ export const MoveNode = (props: NodeProps<MoveData>) => (
     <GraphNode {...props}>{props.data.label}</GraphNode>
 );
 
+// TODO: Use shadcn togglegroup 
 export const MoveEdge = (props: EdgeProps) => {
     return (
         <BaseEdge {...props}>

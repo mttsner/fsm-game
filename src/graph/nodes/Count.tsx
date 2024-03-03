@@ -23,7 +23,7 @@ export const CountEdge = (props: EdgeProps<CountEdgeData>) => {
                 <select
                     onChange={(e) => (props.data!.compare = e.target.value)}
                     defaultValue={"=="}
-                    className="pt-0 p-0.5 border rounded-sm border-neutral-600 h-5 w-5 leading-4 bg-neutral-700 text-white bg-none text-center"
+                    className="pt-0 p-0.5 border rounded-sm border-foreground h-5 w-5 leading-4 bg-background text-foreground bg-none text-center"
                 >
                     <option value="==">=</option>
                     <option value=">">&gt;</option>
@@ -35,7 +35,7 @@ export const CountEdge = (props: EdgeProps<CountEdgeData>) => {
                     type="number"
                     defaultValue={props.data!.condition}
                     onChange={(e) => (props.data!.condition = +e.target.value)}
-                    className="w-10 h-5 p-0.5 text-center border rounded-sm border-neutral-600 bg-neutral-700"
+                    className="w-10 h-5 p-0.5 text-center border rounded-sm border-foreground bg-background"
                 ></input>
             </div>
         </BaseEdge>
