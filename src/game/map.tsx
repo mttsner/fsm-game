@@ -1,4 +1,4 @@
-import { Canvas, useLoader } from "@react-three/fiber";
+import { Canvas, Vector3, useLoader } from "@react-three/fiber";
 import {
     MapControls,
     Stats,
@@ -13,9 +13,10 @@ import { useTheme } from "@/components/theme";
 
 type SvgProps = {
     src: SVGResult;
+    position: Vector3,
 };
 
-const Svg = forwardRef<THREE.Group, SvgProps>(({ src }, ref) => {
+const Svg = forwardRef<THREE.Group, SvgProps>(({ src, position }, ref) => {
     const matRef = useRef(new THREE.MeshBasicMaterial({ color: "black" }));
     const theme = useTheme();
     const root = document.documentElement;
@@ -26,7 +27,7 @@ const Svg = forwardRef<THREE.Group, SvgProps>(({ src }, ref) => {
     }, [theme]);
 
     return (
-        <group ref={ref}>
+        <group ref={ref} position={position}>
             {src.paths.map((path) =>
                 path.subPaths.map((sub) => {
                     // sub.arcLengthDivisions can be used to make svg curves smoother
@@ -36,7 +37,7 @@ const Svg = forwardRef<THREE.Group, SvgProps>(({ src }, ref) => {
 
                     const geometry = SVGLoader.pointsToStroke(
                         sub.getPoints(),
-                        style
+                        style,
                     );
 
                     return (
@@ -62,14 +63,14 @@ export type GameProps = {
 
 function Game({ update, onFrame, tpsRef }: GameProps) {
     const mapRef = useRef<THREE.Group>(null!);
-    const result = useLoader(SVGLoader, "./map8.svg");
+    const result = useLoader(SVGLoader, "./course.svg");
     const robot = useLoader(GLTFLoader, "./robot.glb");
     const debug = false;
 
     return (
         <Canvas
             orthographic
-            camera={{ position: [0, 0, 10], zoom: 20, up: [0, 0, 1] }}
+            camera={{ position: [0, 0, 10], zoom: 9, up: [0, 0, 1]}}
             resize={{ debounce: 1 }}
         >
             {debug && <Stats showPanel={0} className="stats" />}
@@ -84,11 +85,11 @@ function Game({ update, onFrame, tpsRef }: GameProps) {
             {debug && (
                 <gridHelper args={[20, 20]} rotation={[Math.PI / 2, 0, 0]} />
             )}
-            <Svg ref={mapRef} src={result} />
+            <Svg ref={mapRef} src={result} position={[-26,-20,0]}/>
             <Robot
                 tps={tpsRef}
                 object={robot}
-                position={[-10, -8, 0.1]}
+                position={[-22, -8, 0.1]}
                 map={mapRef}
                 update={update}
                 onFrame={onFrame}
